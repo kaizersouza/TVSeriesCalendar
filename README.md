@@ -1,3 +1,3 @@
 # SeriesCalendar
 Список вышедших на неделе сериалов.
-Retrofit, ViewModel, coroutines
+Retrofit, ViewModel, coroutines, custom view
