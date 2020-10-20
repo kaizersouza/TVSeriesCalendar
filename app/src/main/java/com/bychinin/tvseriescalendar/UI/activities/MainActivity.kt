@@ -1,6 +1,7 @@
 package com.bychinin.tvseriescalendar.UI.activities
 
-import android.animation.ValueAnimator
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,34 +10,48 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bychinin.tvseriescalendar.R
 import com.bychinin.tvseriescalendar.UI.Main.MainViewModel
 import com.bychinin.tvseriescalendar.UI.adapter.MainAdapter
 import com.bychinin.tvseriescalendar.UI.base.ViewModelFactory
-import com.bychinin.tvseriescalendar.UI.view.Loady
+import com.bychinin.tvseriescalendar.data.Interface.CellClickListener
 import com.bychinin.tvseriescalendar.data.api.ApiHelper
 import com.bychinin.tvseriescalendar.data.api.RetrofitBuilder
 import com.bychinin.tvseriescalendar.data.api.RoomSeries
-import com.bychinin.tvseriescalendar.data.model.Series
+import com.bychinin.tvseriescalendar.data.api.tmdb
+import com.bychinin.tvseriescalendar.data.broadcastreceiver.NetworkReceiver
+import com.bychinin.tvseriescalendar.data.model.Series.MovieResult
+import com.bychinin.tvseriescalendar.data.model.Series.Series
+import com.bychinin.tvseriescalendar.databinding.ActivityMainBinding
 import com.bychinin.tvseriescalendar.utils.Status
 import com.bychinin.tvseriescalendar.utils.Utils
-import kotlinx.android.synthetic.main.activity_main.*
 
+class MainActivity : AppCompatActivity(), CellClickListener {
 
-class MainActivity : AppCompatActivity(){
-
+    private lateinit var binding : ActivityMainBinding
     private lateinit var viewModel: MainViewModel
     private lateinit var mainAdapter: MainAdapter
+    private lateinit var networkReceiver : NetworkReceiver
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         val days : Pair<String, String> = Utils.getWeekDays()
         startWorking(days.first, days.second)
 
+        // Broadcast Receiver для отображения актуальной информации о запросе к API
+        networkReceiver = NetworkReceiver()
+        registerReceiver(networkReceiver, IntentFilter(tmdb.NETWORK_NETWORK_ACTION))
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(networkReceiver)
     }
 
     private fun startWorking(air_date_gte: String, air_date_lte: String){
@@ -45,23 +60,15 @@ class MainActivity : AppCompatActivity(){
         viewModel = ViewModelProviders.of(
             this,
             ViewModelFactory(
-                ApiHelper(RetrofitBuilder.apiService, air_date_gte, air_date_lte), RoomSeries(
-                    air_date_gte,
-                    air_date_lte
-                )
+                ApiHelper(this, RetrofitBuilder.apiService, air_date_gte, air_date_lte),
+                RoomSeries(this, air_date_gte, air_date_lte)
             )
         ).get(MainViewModel::class.java)
 
         //
-        main_recycleView.layoutManager = LinearLayoutManager(this)
-        mainAdapter = MainAdapter(arrayListOf())
-        main_recycleView.addItemDecoration(
-            DividerItemDecoration(
-                main_recycleView.context,
-                (main_recycleView.layoutManager as LinearLayoutManager).orientation
-            )
-        )
-        main_recycleView.adapter = mainAdapter
+        binding.mainRecycleView.layoutManager = LinearLayoutManager(this)
+        mainAdapter = MainAdapter(arrayListOf(), this)
+        binding.mainRecycleView.adapter = mainAdapter
 
         //
         setupObservers()
@@ -107,23 +114,32 @@ class MainActivity : AppCompatActivity(){
     }
 
     private fun UIshowLoading(){
-        ld_loading.visibility = View.VISIBLE
-        tv_title.visibility = View.VISIBLE
-        tv_network.visibility = View.VISIBLE
-        main_recycleView.visibility = View.GONE
+
+        binding.ldLoading.visibility = View.VISIBLE
+        binding.tvTitle.visibility = View.VISIBLE
+        binding.tvNetwork.visibility = View.VISIBLE
+        binding.mainRecycleView.visibility = View.GONE
     }
 
     private fun UIshowError(){
-        main_recycleView.visibility = View.VISIBLE
-        ld_loading.visibility = View.GONE
-        tv_title.visibility = View.GONE
-        tv_network.visibility = View.GONE
+        binding.mainRecycleView.visibility = View.VISIBLE
+        binding.ldLoading.visibility = View.GONE
+        binding.tvTitle.visibility = View.GONE
+        binding.tvNetwork.visibility = View.GONE
     }
 
     private fun UIshowSuccess(){
-        main_recycleView.visibility = View.VISIBLE
-        tv_title.visibility = View.GONE
-        tv_network.visibility = View.GONE
-        ld_loading.visibility = View.GONE
+        binding.mainRecycleView.visibility = View.VISIBLE
+        binding.tvTitle.visibility = View.GONE
+        binding.tvNetwork.visibility = View.GONE
+        binding.ldLoading.visibility = View.GONE
     }
+
+    //  Запуск активити с подробной информацией о сериале
+    override fun onCellClickListener(series: MovieResult) {
+        val intent = Intent(this, ViewActivity::class.java)
+        intent.putExtra("SERIES_ID", series.id)
+        startActivity(intent)
+    }
+
 }

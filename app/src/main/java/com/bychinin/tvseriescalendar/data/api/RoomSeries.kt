@@ -1,11 +1,23 @@
 package com.bychinin.tvseriescalendar.data.api
 
-import com.bychinin.tvseriescalendar.data.model.Series
-import com.bychinin.tvseriescalendar.utils.Utils
+import android.content.Context
+import com.bychinin.tvseriescalendar.data.model.Series.Series
 
-class RoomSeries(private val air_date_gte : String,
-                 private val air_date_lte : String
+
+class RoomSeries(
+    private val context: Context,
+    private val air_date_gte: String,
+    private val air_date_lte: String
 ) {
+
+//    init {
+//        val mDatabase = Room.databaseBuilder(
+//            context,
+//            DataBase::class.java, "series_database"
+//                )
+//            .fallbackToDestructiveMigration()
+//            .build()
+//    }
 
     suspend fun isDatainRoom() : Boolean {
         return false
@@ -18,7 +30,6 @@ class RoomSeries(private val air_date_gte : String,
     }
 
     suspend fun writeToRoom(series: Series){
-//        Utils.writeLog(series)
     }
 
 }

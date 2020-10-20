@@ -1,7 +1,9 @@
 package com.bychinin.tvseriescalendar.data.api
 
-import com.bychinin.tvseriescalendar.data.model.Series
+import com.bychinin.tvseriescalendar.data.model.Series.Series
+import com.bychinin.tvseriescalendar.data.model.SeriesInfo.SeriesInfo
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService {
@@ -12,5 +14,11 @@ interface ApiService {
                           @Query("air_date.gte") air_date_gte : String,
                           @Query("air_date.lte") air_date_lte : String
                 ): Series
+
+    @GET("tv/{id}")
+    suspend fun getSeriesInfo(@Path("id") id : Int,
+                              @Query("api_key") api_key : String
+    ): SeriesInfo
+
 
 }

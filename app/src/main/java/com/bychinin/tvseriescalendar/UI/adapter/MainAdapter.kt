@@ -6,21 +6,20 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bychinin.tvseriescalendar.R
-import com.bychinin.tvseriescalendar.data.model.MovieResult
-import kotlinx.android.synthetic.main.item_layout.view.imageViewAvatar
-import kotlinx.android.synthetic.main.item_layout.view.textViewUserEmail
-import kotlinx.android.synthetic.main.item_layout.view.textViewUserName
+import com.bychinin.tvseriescalendar.data.Interface.CellClickListener
+import com.bychinin.tvseriescalendar.data.model.Series.MovieResult
+import kotlinx.android.synthetic.main.item_layout.view.*
 
-class MainAdapter(private val series: ArrayList<MovieResult>) : RecyclerView.Adapter<MainAdapter.DataViewHolder>() {
+class MainAdapter(private val series: ArrayList<MovieResult>, private val cellClickListener: CellClickListener) : RecyclerView.Adapter<MainAdapter.DataViewHolder>(){
 
     class DataViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        private val BASE_IMG_URL = "https://image.tmdb.org/t/p/w500"
+        val BASE_IMG_URL = "https://image.tmdb.org/t/p/w500"
 
         fun bind(series: MovieResult) {
             itemView.apply {
-                textViewUserName.text = series.name
-                textViewUserEmail.text = series.overview
+                main_tv_name.text = series.name
+                main_tv_desc.text = series.overview
                 Glide.with(imageViewAvatar.context)
                     .load("${BASE_IMG_URL}${series.poster_path}")
                     .into(imageViewAvatar)
@@ -35,11 +34,14 @@ class MainAdapter(private val series: ArrayList<MovieResult>) : RecyclerView.Ada
 
     override fun onBindViewHolder(holder: DataViewHolder, position: Int) {
         holder.bind(series[position])
+
+        holder.itemView.setOnClickListener {
+            cellClickListener.onCellClickListener(series[position])
+        }
     }
 
     fun addSeries(series: List<MovieResult>) {
         this.series.apply {
-//            clear()
             addAll(series)
         }
 

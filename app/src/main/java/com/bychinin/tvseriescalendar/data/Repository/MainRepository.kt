@@ -2,7 +2,7 @@ package com.bychinin.tvseriescalendar.data.Repository
 
 import com.bychinin.tvseriescalendar.data.api.ApiHelper
 import com.bychinin.tvseriescalendar.data.api.RoomSeries
-import com.bychinin.tvseriescalendar.data.model.Series
+import com.bychinin.tvseriescalendar.data.model.Series.Series
 
 class MainRepository (private val apiHelper: ApiHelper, private val roomSeries: RoomSeries) {
 
