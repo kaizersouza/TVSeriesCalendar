@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-class Series {
+class RoomSeries {
 
     @PrimaryKey
     // id запись в таблице
@@ -13,15 +13,15 @@ class Series {
     private val mId = 0
 
     // id сериала в API
-    @ColumnInfo(name = "id_series")
-    private val mIdSeries = 0
+    @ColumnInfo(name = "series_id")
+    private val mseriesid = 0
 
     // первая граница диапозона поиска
     @ColumnInfo(name = "air_date_gte")
     private val mAir_date_gte: String? = null
 
     // URL обложки
-    @ColumnInfo(name = "cover")
+    @ColumnInfo(name = "poster_path")
     private val mCover: String? = null
 
     // Название
@@ -29,7 +29,7 @@ class Series {
     private val mName: String? = null
 
     // Описание
-    @ColumnInfo(name = "desc")
+    @ColumnInfo(name = "overview")
     private val mDesc: String? = null
 
 }

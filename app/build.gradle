@@ -2,9 +2,10 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+//apply plugin: 'com.huawei.agconnect'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     buildToolsVersion "29.0.3"
 
     compileOptions {
@@ -19,7 +20,7 @@ android {
     defaultConfig {
         applicationId "com.bychinin.tvseriescalendar"
         minSdkVersion 23
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
 
@@ -63,6 +64,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-runtime:$lifecycleVersion"
     implementation "android.arch.lifecycle:extensions:$lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycleVersion"
 
     // Room
     def roomVersion = "1.1.1"
@@ -91,7 +93,16 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp:$okhttpVersion"
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttpVersion"
 
+    // CardView
     def cardViewVersion = "1.0.0"
     implementation "androidx.cardview:cardview:$cardViewVersion"
+
+    // HMS
+    def huaweiCoreVersion = "1.4.1.300"
+    implementation "com.huawei.agconnect:agconnect-core:$huaweiCoreVersion"
+
+    // material design
+    def materialVersion = "1.2.1"
+    implementation "com.google.android.material:material:$materialVersion"
 
 }

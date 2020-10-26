@@ -22,6 +22,7 @@ class MainAdapter(private val series: ArrayList<MovieResult>, private val cellCl
                 main_tv_desc.text = series.overview
                 Glide.with(imageViewAvatar.context)
                     .load("${BASE_IMG_URL}${series.poster_path}")
+                    .error(R.drawable.ic_error_loading)
                     .into(imageViewAvatar)
             }
         }

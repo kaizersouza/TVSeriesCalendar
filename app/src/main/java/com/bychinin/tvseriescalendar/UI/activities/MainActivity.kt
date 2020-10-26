@@ -2,6 +2,7 @@ package com.bychinin.tvseriescalendar.UI.activities
 
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -34,19 +35,34 @@ class MainActivity : AppCompatActivity(), CellClickListener {
     private lateinit var mainAdapter: MainAdapter
     private lateinit var networkReceiver : NetworkReceiver
 
+    private lateinit var days : Pair<String, String>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val days : Pair<String, String> = Utils.getWeekDays()
+        days = Utils.getWeekDays()
         startWorking(days.first, days.second)
 
         // Broadcast Receiver для отображения актуальной информации о запросе к API
         networkReceiver = NetworkReceiver()
         registerReceiver(networkReceiver, IntentFilter(tmdb.NETWORK_NETWORK_ACTION))
 
+        // prev week
+        binding.mainFloatPrev.setOnClickListener {
+            days = Utils.minusWeek(days)
+            startWorking(days.first, days.second)
+        }
+
+        // next week
+        binding.mainFloatNext.setOnClickListener {
+            days = Utils.plusWeek(days)
+            startWorking(days.first, days.second)
+        }
     }
 
     override fun onDestroy() {
@@ -56,11 +72,12 @@ class MainActivity : AppCompatActivity(), CellClickListener {
 
     private fun startWorking(air_date_gte: String, air_date_lte: String){
 
+        Utils.writeLog("startWorking $air_date_gte $air_date_lte")
         //
         viewModel = ViewModelProviders.of(
             this,
             ViewModelFactory(
-                ApiHelper(this, RetrofitBuilder.apiService, air_date_gte, air_date_lte),
+                ApiHelper(this, RetrofitBuilder.apiService),
                 RoomSeries(this, air_date_gte, air_date_lte)
             )
         ).get(MainViewModel::class.java)
@@ -71,12 +88,7 @@ class MainActivity : AppCompatActivity(), CellClickListener {
         binding.mainRecycleView.adapter = mainAdapter
 
         //
-        setupObservers()
-    }
-
-
-    private fun setupObservers() {
-        viewModel.getSeries().observe(this, Observer {
+        viewModel.getSeries(air_date_gte, air_date_lte).observe(this, Observer {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -114,22 +126,33 @@ class MainActivity : AppCompatActivity(), CellClickListener {
     }
 
     private fun UIshowLoading(){
-
+        // VISIBLE
         binding.ldLoading.visibility = View.VISIBLE
         binding.tvTitle.visibility = View.VISIBLE
         binding.tvNetwork.visibility = View.VISIBLE
+        // GONE
         binding.mainRecycleView.visibility = View.GONE
+        binding.mainFloatNext.visibility = View.GONE
+        binding.mainFloatPrev.visibility = View.GONE
     }
 
     private fun UIshowError(){
+        // VISIBLE
         binding.mainRecycleView.visibility = View.VISIBLE
+        // GONE
         binding.ldLoading.visibility = View.GONE
         binding.tvTitle.visibility = View.GONE
         binding.tvNetwork.visibility = View.GONE
+        binding.mainFloatNext.visibility = View.GONE
+        binding.mainFloatPrev.visibility = View.GONE
     }
 
     private fun UIshowSuccess(){
+        // VISIBLE
         binding.mainRecycleView.visibility = View.VISIBLE
+        binding.mainFloatNext.visibility = View.VISIBLE
+        binding.mainFloatPrev.visibility = View.VISIBLE
+        // GONE
         binding.tvTitle.visibility = View.GONE
         binding.tvNetwork.visibility = View.GONE
         binding.ldLoading.visibility = View.GONE

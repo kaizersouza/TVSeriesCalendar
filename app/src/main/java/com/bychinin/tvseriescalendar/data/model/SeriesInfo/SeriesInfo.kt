@@ -2,7 +2,7 @@ package com.bychinin.tvseriescalendar.data.model.SeriesInfo
 
 data class SeriesInfo(
     val backdrop_path: String?,
-    val created_by: List<CreatedBy>?,
+    val created_by: List<CreatedBy>,
     val episode_run_time: List<Any>?,
     val first_air_date: String?,
     val genres: List<Genre>?,

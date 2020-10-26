@@ -25,7 +25,6 @@ object tmdb {
         TMDBClass("3353", "Peacock"),
         TMDBClass("67", "Showtime"),
         TMDBClass("318", "Starz"),
-        TMDBClass("3091", "Quibi"),
         TMDBClass("88", "FX"),
         TMDBClass("174", "AMC")
     )

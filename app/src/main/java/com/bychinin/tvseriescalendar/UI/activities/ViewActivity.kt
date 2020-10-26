@@ -105,6 +105,20 @@ class ViewActivity : AppCompatActivity() {
         }
         binding.viewTvGenres.text = "${genres}"
 
+        // creators
+        val linearLayout0 : LinearLayout = findViewById(R.id.linearcreators)
+        for (i in 0 until serieInfo.created_by.size) {
+            val view: View = layoutInflater.inflate(R.layout.creators_layout, linearLayout0, false)
+            val imageView = view.findViewById<ImageView>(R.id.iv_creators_logo)
+            Glide.with(this)
+                .load("${BASE_IMG_URL}${serieInfo.created_by[i].profile_path}")
+                .error(R.drawable.ic_error_loading)
+                .into(imageView)
+            val tv = view.findViewById<TextView>(R.id.tv_creators_name)
+            tv.setText(serieInfo.created_by[i].name)
+            linearLayout0.addView(view)
+        }
+
         // networks
         val layoutInflater = LayoutInflater.from(this)
         for (n in serieInfo.networks) {
@@ -165,6 +179,9 @@ class ViewActivity : AppCompatActivity() {
         binding.viewTvDesc.visibility = View.INVISIBLE
         binding.viewIvFinish.visibility = View.INVISIBLE
         binding.viewTvGenres.visibility = View.INVISIBLE
+        binding.viewTvCreators.visibility = View.INVISIBLE
+        binding.viewTvNetwork.visibility = View.INVISIBLE
+        binding.viewTvSeasons.visibility = View.INVISIBLE
     }
 
     private fun UIshowLoading() {
@@ -177,6 +194,9 @@ class ViewActivity : AppCompatActivity() {
         binding.viewTvDesc.visibility = View.INVISIBLE
         binding.viewIvFinish.visibility = View.INVISIBLE
         binding.viewTvGenres.visibility = View.INVISIBLE
+        binding.viewTvCreators.visibility = View.INVISIBLE
+        binding.viewTvNetwork.visibility = View.INVISIBLE
+        binding.viewTvSeasons.visibility = View.INVISIBLE
     }
 
     private fun UIshowSuccess() {
@@ -189,6 +209,9 @@ class ViewActivity : AppCompatActivity() {
         binding.viewTvDesc.visibility = View.VISIBLE
         binding.viewIvFinish.visibility = View.VISIBLE
         binding.viewTvGenres.visibility = View.VISIBLE
+        binding.viewTvCreators.visibility = View.VISIBLE
+        binding.viewTvNetwork.visibility = View.VISIBLE
+        binding.viewTvSeasons.visibility = View.VISIBLE
     }
 
 }
