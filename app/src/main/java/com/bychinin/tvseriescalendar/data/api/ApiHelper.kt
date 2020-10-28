@@ -20,8 +20,6 @@ class ApiHelper(
     suspend fun getSeries(air_date_gte : String, air_date_lte : String) : Series {
         val series : Series = Series(0, mutableListOf(), 0, 0)
 
-        Utils.writeLog("API Helper $air_date_gte $air_date_lte")
-
         tmdb_NetworkArray.forEach {
             sendNetwork(it.name)
             val tmp : Series = apiService.getSeries(tmdb.tmdb_API_KEY, it.id, air_date_gte, air_date_lte)

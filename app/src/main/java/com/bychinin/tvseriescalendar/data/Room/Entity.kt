@@ -10,7 +10,7 @@ class RoomSeries {
     @PrimaryKey
     // id запись в таблице
     @ColumnInfo(name = "id")
-    private val mId = 0
+    val mId = 0
 
     // id сериала в API
     @ColumnInfo(name = "series_id")

@@ -19,7 +19,7 @@ import com.bychinin.tvseriescalendar.UI.base.ViewModelFactory
 import com.bychinin.tvseriescalendar.data.Interface.CellClickListener
 import com.bychinin.tvseriescalendar.data.api.ApiHelper
 import com.bychinin.tvseriescalendar.data.api.RetrofitBuilder
-import com.bychinin.tvseriescalendar.data.api.RoomSeries
+import com.bychinin.tvseriescalendar.data.api.RoomHelper
 import com.bychinin.tvseriescalendar.data.api.tmdb
 import com.bychinin.tvseriescalendar.data.broadcastreceiver.NetworkReceiver
 import com.bychinin.tvseriescalendar.data.model.Series.MovieResult
@@ -72,13 +72,12 @@ class MainActivity : AppCompatActivity(), CellClickListener {
 
     private fun startWorking(air_date_gte: String, air_date_lte: String){
 
-        Utils.writeLog("startWorking $air_date_gte $air_date_lte")
         //
         viewModel = ViewModelProviders.of(
             this,
             ViewModelFactory(
                 ApiHelper(this, RetrofitBuilder.apiService),
-                RoomSeries(this, air_date_gte, air_date_lte)
+                RoomHelper()
             )
         ).get(MainViewModel::class.java)
 

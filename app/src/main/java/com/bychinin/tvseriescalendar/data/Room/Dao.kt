@@ -19,6 +19,6 @@ interface SeriesDao {
 
     // Получение списка сериалов из БД
     @Query("SELECT * from series where air_date_gte=:mAir_date_gte")
-    fun getSeries(mAir_date_gte : String):List<Series>
+    fun getSeries(mAir_date_gte : String) : List<Series>
 
 }
