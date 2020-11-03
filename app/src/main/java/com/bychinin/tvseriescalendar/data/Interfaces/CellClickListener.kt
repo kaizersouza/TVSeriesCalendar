@@ -1,4 +1,4 @@
-package com.bychinin.tvseriescalendar.data.Interface
+package com.bychinin.tvseriescalendar.data.Interfaces
 
 import com.bychinin.tvseriescalendar.data.model.Series.MovieResult
 

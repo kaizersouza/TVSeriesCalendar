@@ -8,10 +8,10 @@ import kotlinx.coroutines.Dispatchers
 
 class InfoViewModel(private val viewRepository: InfoRepository) : ViewModel() {
 
-    fun getSeriesInfo() = liveData(Dispatchers.IO) {
+    fun getAllInfo(voute_count : Int) = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))
         try {
-            emit(Resource.success(data = viewRepository.getSeriesInfo()))
+            emit(Resource.success(data = viewRepository.getAllInfo(voute_count)))
         } catch (exception: Exception) {
             emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
         }

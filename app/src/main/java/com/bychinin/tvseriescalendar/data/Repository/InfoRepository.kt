@@ -1,20 +1,8 @@
 package com.bychinin.tvseriescalendar.data.Repository
 
-import com.bychinin.tvseriescalendar.data.api.InfoHelper
-import com.bychinin.tvseriescalendar.data.api.RoomInfo
+import com.bychinin.tvseriescalendar.data.api.API.InfoHelper
 
-class InfoRepository (private val infoHelper: InfoHelper, private val roomInfo: RoomInfo) {
+class InfoRepository (private val infoHelper: InfoHelper) {
 
-//    suspend fun getSeriesInfo() : SeriesInfo {
-//        return if (roomInfo.isDatainRoom())
-//            //roomInfo.getDataFromRoom()
-//        TODO("roomInfo.isDatainRoom()")
-//        else {
-//            val serie : SeriesInfo = infoHelper.getSeriesInfo()
-//            roomInfo.writeToRoom(serie)
-//            serie
-//        }
-//    }
-
-    suspend fun getSeriesInfo() = infoHelper.getSeriesInfo()
+    suspend fun getAllInfo(voute_count : Int) = infoHelper.getSeriesInfo(voute_count)
 }

@@ -1,7 +1,6 @@
 package com.bychinin.tvseriescalendar.UI.activities
 
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,12 +15,10 @@ import com.bychinin.tvseriescalendar.R
 import com.bychinin.tvseriescalendar.UI.Main.MainViewModel
 import com.bychinin.tvseriescalendar.UI.adapter.MainAdapter
 import com.bychinin.tvseriescalendar.UI.base.ViewModelFactory
-import com.bychinin.tvseriescalendar.data.Interface.CellClickListener
-import com.bychinin.tvseriescalendar.data.api.ApiHelper
-import com.bychinin.tvseriescalendar.data.api.RetrofitBuilder
-import com.bychinin.tvseriescalendar.data.api.RoomHelper
-import com.bychinin.tvseriescalendar.data.api.tmdb
-import com.bychinin.tvseriescalendar.data.broadcastreceiver.NetworkReceiver
+import com.bychinin.tvseriescalendar.data.Interfaces.CellClickListener
+import com.bychinin.tvseriescalendar.data.api.API.ApiHelper
+import com.bychinin.tvseriescalendar.data.api.API.RetrofitBuilder
+import com.bychinin.tvseriescalendar.data.api.Cash.CashedHelper
 import com.bychinin.tvseriescalendar.data.model.Series.MovieResult
 import com.bychinin.tvseriescalendar.data.model.Series.Series
 import com.bychinin.tvseriescalendar.databinding.ActivityMainBinding
@@ -33,7 +30,6 @@ class MainActivity : AppCompatActivity(), CellClickListener {
     private lateinit var binding : ActivityMainBinding
     private lateinit var viewModel: MainViewModel
     private lateinit var mainAdapter: MainAdapter
-    private lateinit var networkReceiver : NetworkReceiver
 
     private lateinit var days : Pair<String, String>
 
@@ -48,10 +44,6 @@ class MainActivity : AppCompatActivity(), CellClickListener {
         days = Utils.getWeekDays()
         startWorking(days.first, days.second)
 
-        // Broadcast Receiver для отображения актуальной информации о запросе к API
-        networkReceiver = NetworkReceiver()
-        registerReceiver(networkReceiver, IntentFilter(tmdb.NETWORK_NETWORK_ACTION))
-
         // prev week
         binding.mainFloatPrev.setOnClickListener {
             days = Utils.minusWeek(days)
@@ -65,19 +57,14 @@ class MainActivity : AppCompatActivity(), CellClickListener {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        unregisterReceiver(networkReceiver)
-    }
-
     private fun startWorking(air_date_gte: String, air_date_lte: String){
 
         //
         viewModel = ViewModelProviders.of(
             this,
             ViewModelFactory(
-                ApiHelper(this, RetrofitBuilder.apiService),
-                RoomHelper()
+                ApiHelper(RetrofitBuilder.apiService),
+                CashedHelper(this)
             )
         ).get(MainViewModel::class.java)
 
@@ -86,8 +73,8 @@ class MainActivity : AppCompatActivity(), CellClickListener {
         mainAdapter = MainAdapter(arrayListOf(), this)
         binding.mainRecycleView.adapter = mainAdapter
 
-        //
-        viewModel.getSeries(air_date_gte, air_date_lte).observe(this, Observer {
+        // Данные из кеша
+        viewModel.getAllFromCash(air_date_gte).observe(this, Observer {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -104,6 +91,24 @@ class MainActivity : AppCompatActivity(), CellClickListener {
                 }
             }
         })
+
+        // Данные с сети
+        viewModel.getAllFromNet(air_date_gte, air_date_lte).observe(this, Observer {
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        UIshowSuccess()
+                        resource.data?.let { series -> retrieveList(series) }
+                    }
+                    Status.ERROR -> {
+                        UIshowError()
+                        showErrorToast(it.message)
+                    }
+                    Status.LOADING -> {}
+                }
+            }
+        })
+
     }
 
     private fun retrieveList(series: Series) {
@@ -122,6 +127,8 @@ class MainActivity : AppCompatActivity(), CellClickListener {
         val toast : Toast = Toast(this)
         toast.view = layout
         toast.show()
+
+        Utils.writeLog(text)
     }
 
     private fun UIshowLoading(){
@@ -159,9 +166,10 @@ class MainActivity : AppCompatActivity(), CellClickListener {
 
     //  Запуск активити с подробной информацией о сериале
     override fun onCellClickListener(series: MovieResult) {
-        val intent = Intent(this, ViewActivity::class.java)
-        intent.putExtra("SERIES_ID", series.id)
-        startActivity(intent)
+            val intent = Intent(this, ViewActivity::class.java)
+            intent.putExtra("SERIES_ID", series.id)
+            intent.putExtra("VOTE_COUNT", series.vote_count)
+            startActivity(intent)
     }
 
 }

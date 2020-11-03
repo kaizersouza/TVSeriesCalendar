@@ -70,4 +70,7 @@ object Utils {
         return Pair<String, String>(date11, date22)
     }
 
+    // Идентификатор фильма/сериала
+    const val VOTE_COUNT : Int = -100
+
 }

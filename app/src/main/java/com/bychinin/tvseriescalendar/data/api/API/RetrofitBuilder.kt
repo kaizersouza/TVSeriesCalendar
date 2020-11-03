@@ -1,4 +1,4 @@
-package com.bychinin.tvseriescalendar.data.api
+package com.bychinin.tvseriescalendar.data.api.API
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

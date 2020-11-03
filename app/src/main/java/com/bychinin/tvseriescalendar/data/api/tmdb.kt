@@ -29,10 +29,4 @@ object tmdb {
         TMDBClass("174", "AMC")
     )
 
-
-    // ------------------ BROADCAST SIGNAL ------------------
-
-    val NETWORK_NETWORK_ACTION_NAME : String = "NETWORK_NETWORK_ACTION_NAME"
-    val NETWORK_NETWORK_ACTION : String = "com.bychinin.tvseriescalendar.NETWORK_NETWORK_ACTION"
-
 }

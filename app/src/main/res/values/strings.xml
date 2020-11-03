@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">TV weekly release</string>
+    <string name="app_name">Dizz - Movies and series weekly release</string>
     <string name="app_error">Sorry, but we got error</string>
-    <string name="title">TV release this week</string>
+    <string name="title">Dizz - Movies and series weekly release</string>
     <string name="searching_title">"Searching in "</string>
     <string name="genres">Genres:</string>
     <string name="vote">"User score: "</string>

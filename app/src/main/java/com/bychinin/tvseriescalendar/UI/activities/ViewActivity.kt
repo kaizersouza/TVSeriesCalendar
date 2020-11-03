@@ -17,8 +17,7 @@ import com.bumptech.glide.Glide
 import com.bychinin.tvseriescalendar.R
 import com.bychinin.tvseriescalendar.UI.Main.InfoViewModel
 import com.bychinin.tvseriescalendar.UI.base.InfoViewModelFactory
-import com.bychinin.tvseriescalendar.data.api.InfoHelper
-import com.bychinin.tvseriescalendar.data.api.RoomInfo
+import com.bychinin.tvseriescalendar.data.api.API.InfoHelper
 import com.bychinin.tvseriescalendar.data.model.SeriesInfo.SeriesInfo
 import com.bychinin.tvseriescalendar.databinding.ActivityViewBinding
 import com.bychinin.tvseriescalendar.utils.Status
@@ -27,6 +26,7 @@ class ViewActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityViewBinding
     private lateinit var viewInfoModel: InfoViewModel
+    private var voute_count : Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +35,7 @@ class ViewActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val id : Int = intent.getIntExtra("SERIES_ID", 0)
+        voute_count  = intent.getIntExtra("VOTE_COUNT", 0)
         startWorking(id)
 
         binding.viewIvFinish.setOnClickListener {
@@ -48,7 +49,7 @@ class ViewActivity : AppCompatActivity() {
         //
         viewInfoModel = ViewModelProviders.of(
             this,
-            InfoViewModelFactory(InfoHelper(id), RoomInfo(this, id))
+            InfoViewModelFactory(InfoHelper(id))
         ).get(InfoViewModel::class.java)
 
         //
@@ -56,7 +57,7 @@ class ViewActivity : AppCompatActivity() {
     }
 
     private fun setupObservers() {
-        viewInfoModel.getSeriesInfo().observe(this, Observer {
+        viewInfoModel.getAllInfo(voute_count).observe(this, Observer {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -82,8 +83,12 @@ class ViewActivity : AppCompatActivity() {
         // Text Fields
         binding.viewTvName.text = serieInfo.name
         binding.viewTvDesc.text = serieInfo.overview
-        binding.viewTvRating.text = "${resources.getString(R.string.vote)} ${serieInfo.vote_average}"
-        binding.viewTvSeasonsCount.text = "Seasons: ${serieInfo.number_of_seasons}\nEpisodes: ${serieInfo.number_of_episodes}"
+        binding.viewTvRating.text =
+            "${resources.getString(R.string.vote)} ${serieInfo.vote_average}"
+        if ((serieInfo.number_of_episodes != 0) and (serieInfo.number_of_seasons != 0)) {
+            binding.viewTvSeasonsCount.text =
+                "Seasons: ${serieInfo.number_of_seasons}\nEpisodes: ${serieInfo.number_of_episodes}"
+        }
 
         // Poster
         Glide.with(this)
@@ -93,9 +98,9 @@ class ViewActivity : AppCompatActivity() {
             .into(binding.viewIvPoster)
 
         // genres
-        var genres : String = ""
-        if (serieInfo.genres!!.isNotEmpty()) {
-            for (g in serieInfo.genres) {
+        var genres: String = ""
+        if (serieInfo.genres?.isNotEmpty()!!) {
+            for (g in serieInfo.genres!!) {
                 if (genres == "") {
                     genres += "${g.name}"
                 } else {
@@ -106,55 +111,68 @@ class ViewActivity : AppCompatActivity() {
         binding.viewTvGenres.text = "${genres}"
 
         // creators
-        val linearLayout0 : LinearLayout = findViewById(R.id.linearcreators)
-        for (i in 0 until serieInfo.created_by.size) {
-            val view: View = layoutInflater.inflate(R.layout.creators_layout, linearLayout0, false)
-            val imageView = view.findViewById<ImageView>(R.id.iv_creators_logo)
-            Glide.with(this)
-                .load("${BASE_IMG_URL}${serieInfo.created_by[i].profile_path}")
-                .error(R.drawable.ic_error_loading)
-                .into(imageView)
-            val tv = view.findViewById<TextView>(R.id.tv_creators_name)
-            tv.setText(serieInfo.created_by[i].name)
-            linearLayout0.addView(view)
+        if (!serieInfo.created_by.isNullOrEmpty()) {
+            val linearLayout0: LinearLayout = findViewById(R.id.linearcreators)
+            for (i in 0 until serieInfo.created_by.size) {
+                val view: View =
+                    layoutInflater.inflate(R.layout.creators_layout, linearLayout0, false)
+                val imageView = view.findViewById<ImageView>(R.id.iv_creators_logo)
+                Glide.with(this)
+                    .load("${BASE_IMG_URL}${serieInfo.created_by[i].profile_path}")
+                    .error(R.drawable.ic_error_loading)
+                    .into(imageView)
+                val tv = view.findViewById<TextView>(R.id.tv_creators_name)
+                tv.setText(serieInfo.created_by[i].name)
+                linearLayout0.addView(view)
+            }
+        } else {
+            binding.viewTvCreators.visibility = View.GONE
         }
 
         // networks
-        val layoutInflater = LayoutInflater.from(this)
-        for (n in serieInfo.networks) {
-            val view: View = layoutInflater.inflate(
-                R.layout.network_layout,
-                binding.linearnetwork,
-                false
-            )
-            val imageView1: ImageView = view.findViewById(R.id.iv_network_logo)
-            Glide.with(this)
-                .load("${BASE_IMG_URL}${n.logo_path}")
-                .error(R.drawable.ic_error_loading)
-                .into(imageView1)
-            binding.linearnetwork.addView(view)
-        }
+        if (!serieInfo.networks.isNullOrEmpty()) {
+            val layoutInflater = LayoutInflater.from(this)
+            for (n in serieInfo.networks) {
+                val view: View = layoutInflater.inflate(
+                    R.layout.network_layout,
+                    binding.linearnetwork,
+                    false
+                )
+                val imageView1: ImageView = view.findViewById(R.id.iv_network_logo)
+                Glide.with(this)
+                    .load("${BASE_IMG_URL}${n.logo_path}")
+                    .error(R.drawable.ic_error_loading)
+                    .into(imageView1)
+                binding.linearnetwork.addView(view)
+            }
 
-        binding.linearnetwork.setOnClickListener {
-            try {
+            binding.linearnetwork.setOnClickListener {
+                try {
                     startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(serieInfo.homepage)))
+                } catch (e: ActivityNotFoundException) {
                 }
-            catch (e: ActivityNotFoundException) {}
+            }
+        } else {
+            binding.viewTvNetwork.visibility = View.GONE
         }
 
         // seasons
-        val linearLayout1 : LinearLayout = findViewById(R.id.linearseasons)
+        if (!serieInfo.seasons.isNullOrEmpty()) {
+        val linearLayout1: LinearLayout = findViewById(R.id.linearseasons)
         for (i in 0 until serieInfo.seasons.size) {
             val view: View = layoutInflater.inflate(R.layout.seasons_layout, linearLayout1, false)
             val imageView = view.findViewById<ImageView>(R.id.iv_season_logo)
             Glide.with(this)
-                    .load("${BASE_IMG_URL}${serieInfo.seasons[i].poster_path}")
-                    .error(R.drawable.ic_error_loading)
-                    .into(imageView)
+                .load("${BASE_IMG_URL}${serieInfo.seasons[i].poster_path}")
+                .error(R.drawable.ic_error_loading)
+                .into(imageView)
             val tv = view.findViewById<TextView>(R.id.tv_season_name)
             tv.setText(serieInfo.seasons[i].name)
             linearLayout1.addView(view)
         }
+    } else {
+        binding.viewTvSeasons.visibility = View.GONE
+    }
 
     }
 

@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-//apply plugin: 'com.huawei.agconnect'
 
 android {
     compileSdkVersion 30
@@ -21,8 +20,8 @@ android {
         applicationId "com.bychinin.tvseriescalendar"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
+        versionCode 6
+        versionName "1.0.5"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -66,11 +65,6 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycleVersion"
 
-    // Room
-    def room_version = "2.2.5"
-    implementation "androidx.room:room-runtime:$room_version"
-    annotationProcessor "androidx.room:room-compiler:$room_version"
-
     //Retrofit
     def retrofitVersion = "2.6.2"
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
@@ -97,12 +91,14 @@ dependencies {
     def cardViewVersion = "1.0.0"
     implementation "androidx.cardview:cardview:$cardViewVersion"
 
-    // HMS
-    def huaweiCoreVersion = "1.4.1.300"
-    implementation "com.huawei.agconnect:agconnect-core:$huaweiCoreVersion"
-
     // material design
     def materialVersion = "1.2.1"
     implementation "com.google.android.material:material:$materialVersion"
+
+    // ROOM
+    def roomVersion = "2.2.5"
+    implementation "androidx.room:room-runtime:$roomVersion"
+    implementation 'android.arch.persistence.room:runtime:1.1.1'
+    kapt "androidx.room:room-compiler:$roomVersion"
 
 }

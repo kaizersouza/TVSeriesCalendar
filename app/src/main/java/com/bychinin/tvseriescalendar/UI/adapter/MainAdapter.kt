@@ -6,8 +6,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bychinin.tvseriescalendar.R
-import com.bychinin.tvseriescalendar.data.Interface.CellClickListener
+import com.bychinin.tvseriescalendar.data.Interfaces.CellClickListener
 import com.bychinin.tvseriescalendar.data.model.Series.MovieResult
+import com.bychinin.tvseriescalendar.utils.Utils
 import kotlinx.android.synthetic.main.item_layout.view.*
 
 class MainAdapter(private val series: ArrayList<MovieResult>, private val cellClickListener: CellClickListener) : RecyclerView.Adapter<MainAdapter.DataViewHolder>(){
@@ -20,6 +21,9 @@ class MainAdapter(private val series: ArrayList<MovieResult>, private val cellCl
             itemView.apply {
                 main_tv_name.text = series.name
                 main_tv_desc.text = series.overview
+                if (series.vote_count == Utils.VOTE_COUNT) {
+                    main_tv_type.text = "Movie"
+                } else {main_tv_type.text = "TV Series"}
                 Glide.with(imageViewAvatar.context)
                     .load("${BASE_IMG_URL}${series.poster_path}")
                     .error(R.drawable.ic_error_loading)
@@ -43,6 +47,7 @@ class MainAdapter(private val series: ArrayList<MovieResult>, private val cellCl
 
     fun addSeries(series: List<MovieResult>) {
         this.series.apply {
+            clear()
             addAll(series)
         }
 
