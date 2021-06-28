@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1012062649310",
+    "project_id": "tvcalendar-7a109",
+    "storage_bucket": "tvcalendar-7a109.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1012062649310:android:0091853e62cfd1fddc3b4f",
+        "android_client_info": {
+          "package_name": "com.bychinin.tvseriescalendar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1012062649310-ju8kc8t3evel10n6l13c1vd962aeno1k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmd8AUpAfrQ87eVNtMJyFohw9lMWLcYuE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1012062649310-ju8kc8t3evel10n6l13c1vd962aeno1k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
