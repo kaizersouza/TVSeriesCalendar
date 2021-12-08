@@ -1,7 +1,11 @@
 # SeriesCalendar
-Список вышедших на неделе сериалов.
-Retrofit, ViewModel, coroutines, custom view
+Список вышедших на текущей неделе сериалов и фильмов.
+
+Kotlin
+MVVM
+Flow
+Single Activity
+Multi Modules
+Coroutines
 
 
-<img src="imgs/Screenshot1.png" width=50%>
-<img src="imgs/Screenshot2.png" width=50%>
